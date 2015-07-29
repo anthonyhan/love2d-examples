@@ -26,11 +26,7 @@ end
 
 function love.draw()
 	
-	hex_center.x = 200;
-	hex_center.y = 200;
-	
-	love.graphics.clear()
-	love.graphics.setColor(255,255,255)
+	-- love.graphics.clear()
 	
 	for i=0,9,1
 	do
@@ -46,10 +42,10 @@ end
 
 
 function draw_hex(center, size)
-		for  i=1,6,1 
+		for  i=0,5,1 
 	do
-		x1, y1 = hex_cornor(center, size, i-1)
-		x2, y2 = hex_cornor(center, size, i)
+		x1, y1 = hex_cornor(center, size, i)
+		x2, y2 = hex_cornor(center, size, i+1)
 		draw_hex_edge(x1, y1, x2, y2)
 	end
 end
@@ -87,7 +83,7 @@ end
 
 function center_odd_q(hex)
 	x = hex.q * HEX_W * 0.75 + 0.5 * HEX_W
-	y = hex.r * HEX_H  + (1-hex.q%2)*0.5*HEX_H  + 0.5 * HEX_H
+	y = hex.r * HEX_H  + (hex.q%2)*0.5*HEX_H  + 0.5 * HEX_H
 	return point(x, y)
 end
 
@@ -107,6 +103,13 @@ function hex_to_cube(q, r)
 	return q, -x-z, z
 end
 
+function cube_to_oddq(cube)
+	return hex(cube.x,  cube.z + (cube.x - cube.x%2)/2)
+end
+
+function oddq_to_cube(hex)
+end
+
 function hex(q, r)
 	local hex = {}
 	hex.q = q
@@ -119,6 +122,7 @@ function cube(x, y, z)
 	cube.x = x
 	cube.y = y
 	cube.z = z
+	return cube
 end
 
 function point(x,y)
@@ -127,4 +131,3 @@ function point(x,y)
 	point.y = y
 	return point
 end
-
