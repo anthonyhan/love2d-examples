@@ -28,25 +28,28 @@ function love.draw()
 	
 	-- love.graphics.clear()
 	
-	for i=0,9,1
+	for i=0,12,1
 	do
 		for j=0,7,1
 		do
 			local hex_odd = hex(i,j)
 			hex_center = center_odd_q(hex_odd)
+			love.graphics.setColor(0,127, 127)
 			draw_hex(hex_center, HEX_SIZE)
+			love.graphics.setColor(255,255,255)
+			draw_hex_outline(hex_center, HEX_SIZE)
 		end	
 	end
 
 end
 
 
-function draw_hex(center, size)
-		for  i=0,5,1 
+function draw_hex_outline(center, size)
+	for  i=0,5,1 
 	do
 		x1, y1 = hex_cornor(center, size, i)
 		x2, y2 = hex_cornor(center, size, i+1)
-		draw_hex_edge(x1, y1, x2, y2)
+		draw_hex_line(x1, y1, x2, y2)
 	end
 end
 
@@ -56,8 +59,21 @@ function hex_cornor(center, size, i)
 	return center.x + size * math.cos(angle_rad), center.y + size * math.sin(angle_rad)
 end
 
-function draw_hex_edge(x1, y1, x2, y2)
+function draw_hex_line(x1, y1, x2, y2)
 	love.graphics.line(x1, y1, x2, y2)
+end
+
+function draw_hex(center, size)
+	for i=0,5,1
+	do
+		x1, y1 = hex_cornor(center, size, i)
+		x2, y2 = hex_cornor(center, size, i+1)
+		draw_hex_polygon(center, point(x1,y1), point(x2, y2))
+	end
+end
+
+function draw_hex_polygon( center, pt1, pt2)
+	love.graphics.polygon('fill', center.x, center.y, pt1.x, pt1.y, pt2.x, pt2.y)
 end
 
 
@@ -108,6 +124,10 @@ function cube_to_oddq(cube)
 end
 
 function oddq_to_cube(hex)
+	x = hex.q
+	z = hex.r - ( hex.r - hex.r%2)/2
+	y = -x-z
+	return cube(x, y, z)
 end
 
 function hex(q, r)
