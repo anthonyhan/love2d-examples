@@ -171,6 +171,9 @@ end
 
 
 function draw_hex_outline(x1, y1, x2, y2)
+	-- love.graphics.setColor(0,0,0)
+	-- love.graphics.line(x1, y1+2, x2, y2+2)
+	love.graphics.setColor(255,255,255)
 	love.graphics.line(x1, y1, x2, y2)
 end
 
