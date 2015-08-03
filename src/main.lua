@@ -87,14 +87,14 @@ function love.draw()
 		do
 			local hex_odd = Hex(i,j)
 			local hex_center = get_hex_center(hex_odd)
-			draw_hex(hex_center, HEX_SIZE, Color(0, 127, 127))
+			draw_hex(hex_center, HEX_SIZE, Color(127, 127, 127))
 			draw_hex_coordinate(hex_odd)
 		end
 	end
 
 
 	--draw center
-	hx1 = Hex(2, 2)
+	hx1 = Hex(4, 4)
 	center_pt = get_hex_center(hx1)
 	draw_hex(center_pt, HEX_SIZE, Color(127,0, 0))
 	cb1 = oddq_to_cube(hx1)
@@ -139,9 +139,21 @@ function love.draw()
 	end
 
 
+	--draw hexagon range
+	-- draw_hex_range(hx1, 2, Color(127, 127, 127))
 
 
 
+
+	--draw intersection between two cube areas
+	local range1=2
+	local range2=2
+	hx1 = Hex(3,3)
+	hx2 = Hex(6,4)
+	draw_hex_range(hx1, range1, Color(127, 127, 0))
+	draw_hex_range(hx2, range2, Color(0, 127, 127))
+
+	draw_hex_intersection(hx1, range1, hx2, range2, Color(75, 0, 0))
 
 
 
@@ -167,7 +179,7 @@ end
 
 
 
-----------------------[[CONSTANTS]]----------------------
+----------------------[[draw shapes]]----------------------
 
 
 function draw_hex_outline(x1, y1, x2, y2)
@@ -180,6 +192,7 @@ end
 function draw_hex_coordinate(hex)
 	local text = hex.q .. "," .. hex.r
 	local center = get_hex_center(hex)
+	love.graphics.setColor(255,255,255)
 	love.graphics.print(text, center.x-10, center.y)
 end
 
@@ -197,7 +210,6 @@ function draw_hex(center, size, color)
 		love.graphics.setColor(color.r, color.g, color.b, color.a)
 		draw_hex_polygon(center, Point(x1,y1), Point(x2, y2))
 
-		love.graphics.setColor(255,255,255)
 		draw_hex_outline(x1, y1, x2, y2)
 	end
 end
@@ -206,13 +218,42 @@ function draw_hex_polygon( center, pt1, pt2)
 	love.graphics.polygon('fill', center.x, center.y, pt1.x, pt1.y, pt2.x, pt2.y)
 end
 
+function draw_hex_range(hex, range, color)
+	local cube = oddq_to_cube(hex)
+	local range_table = cube_range(cube, range)
+	for i=1,table.getn(range_table),1
+	do
+		local hx = cube_to_oddq(range_table[i])
+		if(hx.q>=0 and hx.q<=12 and hx.r>=0 and hx.r<=7)
+		then
+			hx_center = get_hex_center(hx)
+			draw_hex(hx_center, HEX_SIZE, color)
+		end
+	end
+end
 
+function draw_hex_intersection(hex1, range1, hex2, range2, color)
+	local cube1 = oddq_to_cube(hex1)
+	local cube2 = oddq_to_cube(hex2)
+	local intersection_table = cube_intersection(cube1, range1, cube2, range2)
+	for i=1,table.getn(intersection_table),1
+	do
+		local hx = cube_to_oddq(intersection_table[i])
+		if(hx.q>=0 and hx.q<=12 and hx.r>=0 and hx.r<=7)
+		then
+			hx_center = get_hex_center(hx)
+			draw_hex(hx_center, HEX_SIZE, color)
+		end
+	end
+end
 
 
 
 
 
 ----------------------CALCULATIONS----------------------
+
+--===HEX===--
 
 function hex_cornor(center, size, i)
 	local angle_deg = 60 * i
@@ -240,6 +281,8 @@ function hex_round(h)
 	return cube_to_hex(cube_round(hex_to_cube(h)))
 end
 
+
+--===CUBE===--
 
 ----cube coordinates caculation
 function cube_direction(dir)
@@ -287,6 +330,42 @@ function cube_linedraw(a, b)
 	return result
 end
 
+-- return cubes in specified range
+function cube_range(cube, step)
+	local result = {}
+	for dx=-step, step, 1
+	do
+		for dy=math.max(-step, -dx-step), math.min(step, -dx+step), 1
+		do
+			local dz = -dx-dy
+			table.insert(result, cube_add(cube, Cube(dx, dy, dz)))
+		end
+	end
+	return result
+end
+
+
+-- return intersecting cubes between one range and another.
+function cube_intersection(cb1, range1, cb2, range2)
+	local result = {}
+	local x_min = math.max(cb1.x-range1, cb2.x-range2)
+	local x_max = math.min(cb1.x+range1, cb2.x+range2)
+	local y_min = math.max(cb1.y-range1, cb2.y-range2)
+	local y_max = math.min(cb1.y+range1, cb2.y+range2)
+	local z_min = math.max(cb1.z-range1, cb2.z-range2)
+	local z_max = math.min(cb1.z+range1, cb2.z+range2)
+
+	for x=x_min, x_max, 1
+	do
+		for y=math.max(y_min, -x-z_max), math.min(y_max, -x-z_min), 1
+		do
+			local z = -x-y
+			table.insert(result, Cube(x, y, z))
+		end
+	end
+	return result
+end
+
 -- return a integer coordinates
 function cube_round(cb)
 	local rx = round(cb.x)
@@ -306,7 +385,6 @@ function cube_round(cb)
 	end
 	return Cube(rx, ry, rz)
 end
-
 
 
 
