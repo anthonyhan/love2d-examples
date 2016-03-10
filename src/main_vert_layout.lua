@@ -41,8 +41,8 @@ end
 ----------------------[[CONSTANTS]]----------------------
 
 HEX_SIZE = 40
-HEX_H = HEX_SIZE * 2
-HEX_W = HEX_H * math.sqrt(3)*0.5
+HEX_W = HEX_SIZE * 2
+HEX_H = HEX_W * math.sqrt(3)*0.5
 
 CUBE_DIRECTIONS = {
 	{1, -1, 0}, 	{1, 0, -1}, 	{0, 1, -1},
@@ -67,8 +67,7 @@ HEX_ZERO = Point(0,0)
 
 
 
-GRID_COLS=10
-GRID_ROWS=8
+
 
 ----------------------[[LOVE2d Methods]]----------------------
 
@@ -79,12 +78,12 @@ end
 
 function love.draw()
 
-	love.graphics.clear()
+	-- love.graphics.clear()
 
 	--draw hexagons
-	for i=0,GRID_COLS,1
+	for i=0,12,1
 	do
-		for j=0,GRID_ROWS,1
+		for j=0,7,1
 		do
 			local hex_odd = Hex(i,j)
 			local hex_center = get_hex_center(hex_odd)
@@ -159,9 +158,9 @@ function love.draw()
 
 
 	--draw coordinates
-	for i=0,GRID_COLS,1
+	for i=0,12,1
 	do
-		for j=0,GRID_ROWS,1
+		for j=0,7,1
 		do
 			local hex_odd = Hex(i,j)
 			draw_hex_coordinate(hex_odd)
@@ -257,22 +256,15 @@ end
 --===HEX===--
 
 function hex_cornor(center, size, i)
-	local angle_deg = 60 * i + 30
+	local angle_deg = 60 * i
 	local angle_rad = math.pi/180 * angle_deg
 	return center.x + size * math.cos(angle_rad), center.y + size * math.sin(angle_rad)
 end
 
--- get center x,y of a hexagon. (odd-q type) vertical
---function get_hex_center(hex)
---	x = hex.q * HEX_W * 0.75 + 0.5 * HEX_W
---	y = hex.r * HEX_H  + (hex.q%2)*0.5*HEX_H  + 0.5 * HEX_H
---	return Point(x, y)
---end
-
--- get center x,y of a hexagon. (odd-r type) horizontal
+-- get center x,y of a hexagon. (odd-q type)
 function get_hex_center(hex)
-	x = hex.q * HEX_W  + (hex.r%2)*0.5*HEX_W  + 0.5 * HEX_H
-	y = hex.r * HEX_H * 0.75 + 0.5 * HEX_H
+	x = hex.q * HEX_W * 0.75 + 0.5 * HEX_W
+	y = hex.r * HEX_H  + (hex.q%2)*0.5*HEX_H  + 0.5 * HEX_H
 	return Point(x, y)
 end
 
