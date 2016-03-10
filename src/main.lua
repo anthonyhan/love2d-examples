@@ -67,8 +67,8 @@ HEX_ZERO = Point(0,0)
 
 
 
-GRID_COLS=10
-GRID_ROWS=8
+GRID_COLS=13
+GRID_ROWS=12
 
 ----------------------[[LOVE2d Methods]]----------------------
 
@@ -106,38 +106,38 @@ function love.draw()
 		cb_neighbor = cube_neighbor(cb1,i)
 		-- print("x=", cb_neighbor.x, "\ty=", cb_neighbor.y, "\tz =", cb_neighbor.z)
 		-- debug.debug()
-		hx_neighbor = cube_to_oddq(cb_neighbor)
-		if(hx_neighbor.q>=0 and hx_neighbor.q<=12 and hx_neighbor.r>=0 and hx_neighbor.r<=7)
+		hx_neighbor = cube_to_oddr(cb_neighbor)
+		if(hx_neighbor.q>=0 and hx_neighbor.q<=GRID_COLS and hx_neighbor.r>=0 and hx_neighbor.r<=GRID_ROWS)
 		then
 			neighbor_center_pt = get_hex_center(hx_neighbor)
 			draw_hex(neighbor_center_pt, HEX_SIZE, Color(0, 127, 0))
 		end
 	end
 
-	--draw diagonal neighbors
-	for i=0,5,1
-	do
-		cb_neighbor = cube_diagonal_neighbor(cb1,i)
-		-- debug.debug()
-		hx_neighbor = cube_to_oddq(cb_neighbor)
-		-- print("q=",hx_neighbor.q, "r=",hx_neighbor.r)
-		if(hx_neighbor.q>=0 and hx_neighbor.q<=12 and hx_neighbor.r>=0 and hx_neighbor.r<=7)
-		then
-			neighbor_center_pt = get_hex_center(hx_neighbor)
-			draw_hex(neighbor_center_pt, HEX_SIZE, Color(0, 0, 127))
-		end
-	end
-
-	--draw hexagon line
-	local hx2 = Hex(11, 7)
-	local cb2 = oddq_to_cube(hx2)
-	local line_table = cube_linedraw(cb1, cb2)
-	for i=1,table.getn(line_table),1
-	do
-		local hx = cube_to_oddq(line_table[i])
-		hx_center = get_hex_center(hx)
-		draw_hex(hx_center, HEX_SIZE, Color(127, 0, 127))
-	end
+--	--draw diagonal neighbors
+--	for i=0,5,1
+--	do
+--		cb_neighbor = cube_diagonal_neighbor(cb1,i)
+--		-- debug.debug()
+--		hx_neighbor = cube_to_oddq(cb_neighbor)
+--		-- print("q=",hx_neighbor.q, "r=",hx_neighbor.r)
+--		if(hx_neighbor.q>=0 and hx_neighbor.q<=12 and hx_neighbor.r>=0 and hx_neighbor.r<=7)
+--		then
+--			neighbor_center_pt = get_hex_center(hx_neighbor)
+--			draw_hex(neighbor_center_pt, HEX_SIZE, Color(0, 0, 127))
+--		end
+--	end
+--
+--	--draw hexagon line
+--	local hx2 = Hex(11, 7)
+--	local cb2 = oddq_to_cube(hx2)
+--	local line_table = cube_linedraw(cb1, cb2)
+--	for i=1,table.getn(line_table),1
+--	do
+--		local hx = cube_to_oddq(line_table[i])
+--		hx_center = get_hex_center(hx)
+--		draw_hex(hx_center, HEX_SIZE, Color(127, 0, 127))
+--	end
 
 
 	--draw hexagon range
@@ -147,14 +147,14 @@ function love.draw()
 
 
 	--draw intersection between two cube areas
-	local range1=2
-	local range2=2
-	hx1 = Hex(3,3)
-	hx2 = Hex(6,4)
-	draw_hex_range(hx1, range1, Color(127, 127, 0))
-	draw_hex_range(hx2, range2, Color(0, 127, 127))
-
-	draw_hex_intersection(hx1, range1, hx2, range2, Color(75, 0, 0))
+--	local range1=2
+--	local range2=2
+--	hx1 = Hex(3,3)
+--	hx2 = Hex(6,4)
+--	draw_hex_range(hx1, range1, Color(127, 127, 0))
+--	draw_hex_range(hx2, range2, Color(0, 127, 127))
+--
+--	draw_hex_intersection(hx1, range1, hx2, range2, Color(75, 0, 0))
 
 
 
@@ -416,6 +416,10 @@ end
 
 function cube_to_oddq(cube)
 	return Hex(cube.x,  cube.z + (cube.x - cube.x%2)/2)
+end
+
+function cube_to_oddr(cube)
+	return Hex(cube.x+(cube.z - cube.z%2)/2, cube.z)
 end
 
 function oddq_to_cube(hex)
