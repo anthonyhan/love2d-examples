@@ -50,7 +50,7 @@ function love.draw()
 		do
 			local hex = Hex(i,j)
 			local hex_center = get_hex_center(hex)
-			local color = Color(0, 127, 0)
+			local color = Color(0, 63, 0)
 			if(i==0 or j==0 or i==GRID_COLS or j == GRID_ROWS)
 			then
 				color = Color(127, 127, 127)
@@ -95,7 +95,7 @@ function love.draw()
  	end
  
  	--draw hexagon line
- 	local hx2 = Hex(10, 0)
+ 	local hx2 = Hex(10, 4)
  	local cb2 = oddr_to_cube(hx2)
  	local line_table = cube_linedraw(cb1, cb2)
  	for i=1,table.getn(line_table),1
@@ -114,9 +114,9 @@ function love.draw()
 
 	--draw intersection between two cube areas
 	local range1=2
-	local range2=2
-	hx1 = Hex(3,3)
-	hx2 = Hex(6,4)
+	local range2=3
+	hx1 = Hex(6,10)
+	hx2 = Hex(10,10)
 	draw_hex_range(hx1, range1, Color(127, 127, 0))
 	draw_hex_range(hx2, range2, Color(0, 127, 127))
 

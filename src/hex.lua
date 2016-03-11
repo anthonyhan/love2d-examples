@@ -51,7 +51,9 @@ function hex_round(h)
 	return cube_to_hex(cube_round(hex_to_cube(h)))
 end
 
-
+function hex_distance(h1, h2)
+	return  math.max( math.abs(h1.q - h2.q), math.abs(h1.q + h1.r - h2.q - h2.r), math.abs(h1.r - h2.r))        --y=-q-r
+end
 
 
 
@@ -100,7 +102,7 @@ function draw_hex_range(hex, range, color)
 	for i=1,table.getn(range_table),1
 	do
 		local hx = cube_to_oddr(range_table[i])
-		if(hx.q>=0 and hx.q<=12 and hx.r>=0 and hx.r<=7)
+		if(hx.q>=0 and hx.q<=GRID_COLS and hx.r>=0 and hx.r<=GRID_ROWS)
 		then
 			hx_center = get_hex_center(hx)
 			draw_hex(hx_center, HEX_SIZE, color)
@@ -115,7 +117,7 @@ function draw_hex_intersection(hex1, range1, hex2, range2, color)
 	for i=1,table.getn(intersection_table),1
 	do
 		local hx = cube_to_oddr(intersection_table[i])
-		if(hx.q>=0 and hx.q<=12 and hx.r>=0 and hx.r<=7)
+		if(hx.q>=0 and hx.q<=GRID_COLS and hx.r>=0 and hx.r<=GRID_ROWS)
 		then
 			hx_center = get_hex_center(hx)
 			draw_hex(hx_center, HEX_SIZE, color)
