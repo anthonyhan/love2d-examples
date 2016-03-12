@@ -127,3 +127,33 @@ function cube_round(cb)
 	end
 	return Cube(rx, ry, rz)
 end
+
+
+-- cube obstacles
+function cube_reachable(cb, movement, obstacles)
+	visited = {}
+	table.insert(visited, cb)
+	fringes = {}
+	table.insert(fringes, {cb})
+	
+	for k=1, movement, 1
+	do
+		table.insert(fringes, {})
+		for j=1, table.getn(fringes[k]), 1	--each cube in fringes[k-1] --index of arrary starts from 1 in lua  
+		do
+			cube = fringes[k][j]
+			for dir=0, 5, 1
+			do
+				neighbor = cube_neighbor(cube, dir)
+				if(not is_cube_in_list(neighbor, visited) and not is_cube_in_list(neighbor, obstacles))
+				then 
+					table.insert(visited, neighbor)
+					table.insert(fringes[k+1], neighbor)
+				end
+			end
+		end
+	end
+	
+	draw_cube_movements(fringes)
+	return visited
+end

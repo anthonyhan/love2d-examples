@@ -66,3 +66,26 @@ function draw_hex_intersection(hex1, range1, hex2, range2, color)
 		end
 	end
 end
+
+function draw_hex_movement(hex1, movement)
+	local hx_center = get_hex_center(hex1)
+	draw_hex(hx_center, HEX_SIZE, Color(127, 127, 255))
+	
+	local text = movement
+	love.graphics.setColor(0,0,0)
+	love.graphics.print(text, hx_center.x-5, hx_center.y-20)
+end
+
+function draw_cube_movements(list)
+	--print("list.length=".. table.getn(list))
+	for i=1, table.getn(list),1
+	do
+		--print("list[".. i .. "].length=".. table.getn(list[i]))
+		for j=1, table.getn(list[i]),1
+		do
+			hx1 = cube_to_oddr(list[i][j])
+			draw_hex_movement(hx1, i-1)
+			--print("hx.q=".. hx1.q ..", r=".. hx1.r)
+		end
+	end
+end

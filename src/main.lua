@@ -67,6 +67,8 @@ function love.draw()
 	draw_hex(center_pt, HEX_SIZE, Color(127,0, 0))
 	cb1 = oddr_to_cube(hx1)
 
+	
+	--[[
 	--draw neighbor
 	for i=0,5,1
 	do
@@ -81,7 +83,6 @@ function love.draw()
 		end
 	end
 
-	--[[
  	--draw diagonal neighbors
  	for i=0,5,1
  	do
@@ -111,7 +112,7 @@ function love.draw()
 	--draw hexagon range
 	--draw_hex_range(hx1, 2, Color(0, 127, 127))
 
-	--]]
+
 
 
 	--draw intersection between two cube areas
@@ -124,7 +125,29 @@ function love.draw()
 
 	draw_hex_intersection(hx1, range1, hx2, range2, Color(75, 0, 0))
 
-
+	--]]
+	
+	--draw cube obstacles path
+	movement = 3
+--	hex_obstacles = { Hex(3,3),  Hex(4,3), Hex(5,4), Hex(4,5), Hex(3,5), Hex(3,4), Hex(2,3) }
+hex_obstacles = { Hex(3,3),  Hex(4,3), Hex(4,5), Hex(3,5), Hex(2,3) }
+	cube_obstacles = {}
+	for i=1, table.getn(hex_obstacles), 1
+	do
+		local cube = oddr_to_cube(hex_obstacles[i])
+		table.insert(cube_obstacles, cube)
+	end
+	
+	--draw obstacles
+	for i=1, table.getn(hex_obstacles),1
+	do
+		local hx_center = get_hex_center(hex_obstacles[i])
+		draw_hex(hx_center, HEX_SIZE, Color(63, 0, 0))
+	end
+	
+	cube_reachable(cb1, movement, cube_obstacles)
+	
+	
 
 	--draw coordinates
 	for i=0,GRID_COLS,1
