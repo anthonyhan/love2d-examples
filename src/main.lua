@@ -2,6 +2,7 @@ require "hex"
 require "cube"
 require "conversion"
 require "utils"
+require "drawing"
 
 
 ----------------------[[CLASS TYPES]]----------------------
@@ -80,6 +81,7 @@ function love.draw()
 		end
 	end
 
+	--[[
  	--draw diagonal neighbors
  	for i=0,5,1
  	do
@@ -109,7 +111,7 @@ function love.draw()
 	--draw hexagon range
 	--draw_hex_range(hx1, 2, Color(0, 127, 127))
 
-
+	--]]
 
 
 	--draw intersection between two cube areas
