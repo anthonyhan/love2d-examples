@@ -29,10 +29,7 @@ GRID_ROWS=8
 
 function love.load()
 	-- sound = love.audio.newSource("Boom_epic_win.ogg")
-	-- love.audio.play(sound)
-	
-	print("-1%6=".. -1%6);
-	
+	-- love.audio.play(sound)	
 end
 
 function love.resize(width, height)
@@ -153,7 +150,7 @@ function love.draw()
 	
 	
 	-- draw cube rotations
-	local hx_rotate = Hex(16,8)
+	local hx_rotate = Hex(17,7)
 	local hx3 = Hex(15,7)
 	
 	draw_hex(get_hex_center(hx3), HEX_SIZE, Color(63,0,0))
@@ -168,6 +165,18 @@ function love.draw()
 		hx_r = cube_to_oddr(cube_r)
 		--print("hx_r: q=".. hx_r.q .. " r=" .. hx_r.r)
 		draw_hex(get_hex_center(hx_r), HEX_SIZE, Color(127,127,0))
+	end
+	
+	-- draw cube rings
+	local radius = 3
+	local cb4 = oddr_to_cube(Hex(15,7))
+	ring_cubes = cube_ring(cb4, radius)
+	
+	for i=1, table.getn(ring_cubes), 1
+	do
+		local cube = ring_cubes[i]
+		hex = cube_to_oddr(cube)
+		draw_hex(get_hex_center(hex), HEX_SIZE, Color(0,127,127))
 	end
 	
 	
