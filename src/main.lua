@@ -30,6 +30,9 @@ GRID_ROWS=8
 function love.load()
 	-- sound = love.audio.newSource("Boom_epic_win.ogg")
 	-- love.audio.play(sound)
+	
+	print("-1%6=".. -1%6);
+	
 end
 
 function love.resize(width, height)
@@ -129,8 +132,8 @@ function love.draw()
 	
 	--draw cube obstacles path
 	movement = 3
---	hex_obstacles = { Hex(3,3),  Hex(4,3), Hex(5,4), Hex(4,5), Hex(3,5), Hex(3,4), Hex(2,3) }
-hex_obstacles = { Hex(3,3),  Hex(4,3), Hex(4,5), Hex(3,5), Hex(2,3) }
+	--	hex_obstacles = { Hex(3,3),  Hex(4,3), Hex(5,4), Hex(4,5), Hex(3,5), Hex(3,4), Hex(2,3) }
+	hex_obstacles = { Hex(3,3),  Hex(4,3), Hex(4,5), Hex(3,5), Hex(2,3) }
 	cube_obstacles = {}
 	for i=1, table.getn(hex_obstacles), 1
 	do
@@ -146,6 +149,26 @@ hex_obstacles = { Hex(3,3),  Hex(4,3), Hex(4,5), Hex(3,5), Hex(2,3) }
 	end
 	
 	cube_reachable(cb1, movement, cube_obstacles)
+	
+	
+	
+	-- draw cube rotations
+	local hx_rotate = Hex(16,8)
+	local hx3 = Hex(15,7)
+	
+	draw_hex(get_hex_center(hx3), HEX_SIZE, Color(63,0,0))
+	cb3 = oddr_to_cube(hx3)
+	cb_rotate = oddr_to_cube(hx_rotate)
+	cb_delta = Cube(cb_rotate.x-cb3.x, cb_rotate.y-cb3.y, cb_rotate.z-cb3.z)
+	
+	for i=0, 5,1
+	do
+		cube_rotated = cube_rotation(cb_delta, i)
+		cube_r = cube_add(cube_rotated, cb3)
+		hx_r = cube_to_oddr(cube_r)
+		--print("hx_r: q=".. hx_r.q .. " r=" .. hx_r.r)
+		draw_hex(get_hex_center(hx_r), HEX_SIZE, Color(127,127,0))
+	end
 	
 	
 

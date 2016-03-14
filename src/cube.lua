@@ -139,7 +139,7 @@ function cube_reachable(cb, movement, obstacles)
 	for k=1, movement, 1
 	do
 		table.insert(fringes, {})
-		for j=1, table.getn(fringes[k]), 1	--each cube in fringes[k-1] --index of arrary starts from 1 in lua  
+		for j=1, table.getn(fringes[k]), 1	--each cube in fringes[k-1] --index of array starts from 1 in lua  
 		do
 			cube = fringes[k][j]
 			for dir=0, 5, 1
@@ -156,4 +156,12 @@ function cube_reachable(cb, movement, obstacles)
 	
 	draw_cube_movements(fringes)
 	return visited
+end
+
+--cube rotation,  turn anticlockwise 60 degrees per rotation
+function cube_rotation(cb, rotation)
+	local x,y,z = cb.x, cb.y, cb.z
+	local rotations = { Cube(x,y,z), Cube(-y,-z,-x), Cube(z,x,y), Cube(-x,-y,-z), Cube(y,z,x), Cube(-z,-x,-y) }
+	local index = rotation%6 + 1		--array index starts from 1
+	return rotations[index]
 end
