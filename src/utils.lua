@@ -23,3 +23,12 @@ function is_cube_in_list(cube, list)
 
 	return false
 end 
+
+function cube_has_neighor_in_list(cube, dir, list)
+	cb_neighbor = cube_neighbor(cube, dir)
+	if(is_cube_in_list(cb_neighbor, list))
+	then
+		return true
+	end
+	return false
+end

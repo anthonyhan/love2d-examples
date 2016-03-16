@@ -12,17 +12,27 @@ require "drawing"
 
 ----------------------[[CONSTANTS]]----------------------
 
-HEX_SIZE = 40
+HEX_SIZE = 64
 HEX_H = HEX_SIZE * 2
 HEX_W = HEX_H * math.sqrt(3)*0.5
 
 HEX_ZERO = Point(0,0)
 
+local width=love.graphics.getWidth()
+local height=love.graphics.getHeight()
+GRID_COLS = math.floor(width/HEX_W - 0.5) -1
+GRID_ROWS = math.floor(height/HEX_H / 0.75 - 1/3) -1
 
+local radius = 2
+castle_center = oddr_to_cube(Hex(8,4))
+castle_walls = cube_ring(castle_center, radius)
 
-GRID_COLS=10
-GRID_ROWS=8
-
+extra_walls_hex = { Hex(12,1), Hex(12,2), Hex(12,3), Hex(12,4), Hex(12,5), Hex(12,6), Hex(11,7), Hex(12,8), Hex(13,1), Hex(14,1), Hex(13,8), Hex(14,8) }
+for i=1, table.getn(extra_walls_hex), 1
+do
+	local cube = oddr_to_cube(extra_walls_hex[i])
+	table.insert(castle_walls, cube)
+end
 
 
 ----------------------[[LOVE2d Methods]]----------------------
@@ -30,6 +40,16 @@ GRID_ROWS=8
 function love.load()
 	-- sound = love.audio.newSource("Boom_epic_win.ogg")
 	-- love.audio.play(sound)	
+	
+	img_tower = { image=love.graphics.newImage("assets/tower_0.png"), ox=51, oy=61, sx=1.0, sy=1.0 }
+	img_gate = { image=love.graphics.newImage("assets/gate.png"), ox=51, oy=100, sx=1.0, sy=1.0 }
+	img_wall_3 = { image=love.graphics.newImage("assets/wall_3.png"), ox=38, oy=40, sx=1.0, sy=1.0 }
+	img_wall_4 = { image=love.graphics.newImage("assets/wall_4.png"), ox=54, oy=70, sx=1.0, sy=1.0 }
+	img_wall_5 = { image=love.graphics.newImage("assets/wall_5.png"), ox=54, oy=52, sx=1.0, sy=1.0 }
+	img_walls = { img_wall_3, img_wall_4, img_wall_5 };
+	
+	offset_walls = { Point(-HEX_W*0.5, 0),  Point(-math.sqrt(3)*0.25*HEX_SIZE, 0.75*HEX_SIZE), Point(math.sqrt(3)*0.25*HEX_SIZE, 0.75*HEX_SIZE) }
+	
 end
 
 function love.resize(width, height)
@@ -62,10 +82,10 @@ function love.draw()
 
 
 	--draw center
-	hx1 = Hex(4, 4)
-	center_pt = get_hex_center(hx1)
-	draw_hex(center_pt, HEX_SIZE, Color(127,0, 0))
-	cb1 = oddr_to_cube(hx1)
+--	hx1 = Hex(4, 4)
+--	center_pt = get_hex_center(hx1)
+--	draw_hex(center_pt, HEX_SIZE, Color(127,0, 0))
+--	cb1 = oddr_to_cube(hx1)
 
 	
 	--[[
@@ -125,7 +145,7 @@ function love.draw()
 
 	draw_hex_intersection(hx1, range1, hx2, range2, Color(75, 0, 0))
 
-	--]]
+	
 	
 	--draw cube obstacles path
 	movement = 3
@@ -139,13 +159,13 @@ function love.draw()
 	end
 	
 	--draw obstacles
-	for i=1, table.getn(hex_obstacles),1
-	do
-		local hx_center = get_hex_center(hex_obstacles[i])
-		draw_hex(hx_center, HEX_SIZE, Color(63, 0, 0))
-	end
-	
-	cube_reachable(cb1, movement, cube_obstacles)
+	-for i=1, table.getn(hex_obstacles),1
+	-do
+	-	local hx_center = get_hex_center(hex_obstacles[i])
+	-	draw_hex(hx_center, HEX_SIZE, Color(63, 0, 0))
+	-end
+	-
+	-cube_reachable(cb1, movement, cube_obstacles)
 	
 	
 	
@@ -179,8 +199,56 @@ function love.draw()
 		draw_hex(get_hex_center(hex), HEX_SIZE, Color(0,127,127))
 	end
 	
+	--]]
 	
-
+	
+	
+	--render castle walls
+		for i=1, table.getn(castle_walls), 1
+	do
+		local cube = castle_walls[i]
+		hex = cube_to_oddr(cube)
+		draw_hex(get_hex_center(hex), HEX_SIZE, Color(0,127,127))
+	end
+	
+	--render castle center
+	draw_hex(get_hex_center(cube_to_oddr(castle_center)), HEX_SIZE, Color(64,0,0))
+	
+	for j=0,GRID_ROWS,1 	--cols
+	do
+		for i=0,GRID_COLS,1 	--rows
+		do
+			
+			local cube = oddr_to_cube(Hex(i,j))
+			if(is_cube_in_list(cube, castle_walls))
+			then
+				--render tower
+				local hex_center = get_hex_center(Hex(i,j))
+				--love.graphics.draw(img_tttt, hex_center.x, hex_center.y)
+--				if(i==5 and j==4)
+--				then
+--					love.graphics.draw(img_gate.image, hex_center.x, hex_center.y, 0, img_gate.sx, img_gate.sy, img_gate.ox, img_gate.oy)
+--				else
+					love.graphics.draw(img_tower.image, hex_center.x, hex_center.y, 0, img_tower.sx, img_tower.sy, img_tower.ox, img_tower.oy)
+--				end
+				
+				
+				--render walls //3 directions: 3,4,5
+				for dir=3, 5, 1
+				do
+					if(cube_has_neighor_in_list(cube, dir, castle_walls))
+					then
+						local img_wall = img_walls[dir-2]
+						local offset_wall = offset_walls[dir-2]
+						love.graphics.draw(img_wall.image, hex_center.x+offset_wall.x, hex_center.y+offset_wall.y, 0, img_wall.sx, img_wall.sy, img_wall.ox, img_wall.oy)
+					end
+				end
+			end			
+		end
+	end
+	
+	
+--[[
 	--draw coordinates
 	for i=0,GRID_COLS,1
 	do
@@ -190,5 +258,5 @@ function love.draw()
 			draw_hex_coordinate(hex_odd)
 		end
 	end
-
+--]]
 end

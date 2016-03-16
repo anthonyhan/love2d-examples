@@ -174,7 +174,6 @@ function cube_ring(center_cube, radius)
 	local results = {}
 	cube = cube_add(center_cube, cube_scale(cube_direction(4), radius))		--direction: right, choose this direction so that the following loop  can start from 0
 	local hx=cube_to_oddr(cube)
-	print("right.hx: q=".. hx.q .. ",r=".. hx.r)
 	for i=0, 5, 1 	--directions
 	do
 		for j=0, radius-1, 1 --radius, one corner to another along the direction "i"
