@@ -12,7 +12,7 @@ require "drawing"
 
 ----------------------[[CONSTANTS]]----------------------
 
-HEX_SIZE = 64
+HEX_SIZE = 40
 HEX_H = HEX_SIZE * 2
 HEX_W = HEX_H * math.sqrt(3)*0.5
 
@@ -41,11 +41,11 @@ function love.load()
 	-- sound = love.audio.newSource("Boom_epic_win.ogg")
 	-- love.audio.play(sound)	
 	
-	img_tower = { image=love.graphics.newImage("assets/tower_0.png"), ox=51, oy=61, sx=1.0, sy=1.0 }
-	img_gate = { image=love.graphics.newImage("assets/gate.png"), ox=51, oy=100, sx=1.0, sy=1.0 }
-	img_wall_3 = { image=love.graphics.newImage("assets/wall_3.png"), ox=38, oy=40, sx=1.0, sy=1.0 }
-	img_wall_4 = { image=love.graphics.newImage("assets/wall_4.png"), ox=54, oy=70, sx=1.0, sy=1.0 }
-	img_wall_5 = { image=love.graphics.newImage("assets/wall_5.png"), ox=54, oy=52, sx=1.0, sy=1.0 }
+	img_tower = { image=love.graphics.newImage("assets/tower_0.png"), 	ox=51, oy=61 , sx=0.625, sy=0.625 }
+	img_gate = { image=love.graphics.newImage("assets/gate.png"), 			ox=51, oy=100, sx=0.625, sy=0.625 }
+	img_wall_3 = { image=love.graphics.newImage("assets/wall_3.png"), 	ox=38, oy=40 , sx=0.625, sy=0.625 }
+	img_wall_4 = { image=love.graphics.newImage("assets/wall_4.png"), 	ox=54, oy=70 , sx=0.625, sy=0.625 }
+	img_wall_5 = { image=love.graphics.newImage("assets/wall_5.png"), 	ox=54, oy=52 , sx=0.625, sy=0.625 }
 	img_walls = { img_wall_3, img_wall_4, img_wall_5 };
 	
 	offset_walls = { Point(-HEX_W*0.5, 0),  Point(-math.sqrt(3)*0.25*HEX_SIZE, 0.75*HEX_SIZE), Point(math.sqrt(3)*0.25*HEX_SIZE, 0.75*HEX_SIZE) }
@@ -248,7 +248,16 @@ function love.draw()
 	end
 	
 	
---[[
+	
+	
+	
+	--draw mouse position hex
+	cb_mouse = pixel_to_cube(love.mouse.getX(), love.mouse.getY())
+	draw_hex( get_hex_center(cube_to_oddr(cb_mouse)),  HEX_SIZE, Color(255,255,0))
+	
+	
+	
+----[[
 	--draw coordinates
 	for i=0,GRID_COLS,1
 	do
@@ -256,6 +265,12 @@ function love.draw()
 		do
 			local hex_odd = Hex(i,j)
 			draw_hex_coordinate(hex_odd)
+			love.graphics.setPointSize(5)
+			
+			--local cb = oddr_to_cube(hex_odd)
+			--local pt = hex_to_pixel(Hex( cube_to_hex(cb.x, cb.y, cb.z)) )
+			local pt = oddr_to_pixel(hex_odd)
+			love.graphics.points(pt.x-  0.5 * HEX_W, pt.y-  0.5 * HEX_H)
 		end
 	end
 --]]
