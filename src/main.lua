@@ -3,6 +3,7 @@ require "cube"
 require "conversion"
 require "utils"
 require "drawing"
+require "renderer"
 
 
 ----------------------[[CLASS TYPES]]----------------------
@@ -20,8 +21,8 @@ HEX_ZERO = Point(0,0)
 
 local width=love.graphics.getWidth()
 local height=love.graphics.getHeight()
-GRID_COLS = math.floor(width/HEX_W - 0.5) -1
-GRID_ROWS = math.floor(height/HEX_H / 0.75 - 1/3) -1
+GRID_COLS = math.floor(width/HEX_W - 0.5) 
+GRID_ROWS = math.floor(height/HEX_H / 0.75 - 1/3)
 
 local radius = 2
 castle_center = oddr_to_cube(Hex(8,4))
@@ -33,6 +34,8 @@ do
 	local cube = oddr_to_cube(extra_walls_hex[i])
 	table.insert(castle_walls, cube)
 end
+--sort table
+table.sort(castle_walls, cube_sort_comp)
 
 
 ----------------------[[LOVE2d Methods]]----------------------
@@ -53,8 +56,35 @@ function love.load()
 end
 
 function love.resize(width, height)
-	GRID_COLS = math.floor(width/HEX_W - 0.5) -1
-	GRID_ROWS = math.floor(height/HEX_H / 0.75 - 1/3) -1
+	GRID_COLS = math.floor(width/HEX_W - 0.5)
+	GRID_ROWS = math.floor(height/HEX_H / 0.75 - 1/3)
+end
+
+function love.mousepressed(x, y, button, istouch)
+	local cube_mouse = pixel_to_cube(love.mouse.getX(), love.mouse.getY())
+
+	if(button == 1) then
+		--primary button, add wall
+		if( not is_cube_in_list(cube_mouse, castle_walls)) then
+			castle_walls[#castle_walls+1] = cube_mouse
+				--sort table
+			table.sort(castle_walls, cube_sort_comp)
+		end
+		
+	elseif(button == 2) then
+		--secondary button, remove wall
+		for i, v in ipairs(castle_walls)  do
+			if( v.x == cube_mouse.x and v.y == cube_mouse.y and v.z == cube_mouse.z) then
+				table.remove(castle_walls,i)
+				--sort table
+				table.sort(castle_walls, cube_sort_comp)
+				break
+			end
+		end
+
+	end
+	
+
 end
 
 function love.update()
@@ -201,10 +231,8 @@ function love.draw()
 	
 	--]]
 	
-	
-	
-	--render castle walls
-		for i=1, table.getn(castle_walls), 1
+	--draw castle wall grid color
+	for i=1, table.getn(castle_walls), 1
 	do
 		local cube = castle_walls[i]
 		hex = cube_to_oddr(cube)
@@ -214,50 +242,16 @@ function love.draw()
 	--render castle center
 	draw_hex(get_hex_center(cube_to_oddr(castle_center)), HEX_SIZE, Color(64,0,0))
 	
-	for j=0,GRID_ROWS,1 	--cols
-	do
-		for i=0,GRID_COLS,1 	--rows
-		do
-			
-			local cube = oddr_to_cube(Hex(i,j))
-			if(is_cube_in_list(cube, castle_walls))
-			then
-				--render tower
-				local hex_center = get_hex_center(Hex(i,j))
-				--love.graphics.draw(img_tttt, hex_center.x, hex_center.y)
---				if(i==5 and j==4)
---				then
---					love.graphics.draw(img_gate.image, hex_center.x, hex_center.y, 0, img_gate.sx, img_gate.sy, img_gate.ox, img_gate.oy)
---				else
-					love.graphics.draw(img_tower.image, hex_center.x, hex_center.y, 0, img_tower.sx, img_tower.sy, img_tower.ox, img_tower.oy)
---				end
-				
-				
-				--render walls //3 directions: 3,4,5
-				for dir=3, 5, 1
-				do
-					if(cube_has_neighor_in_list(cube, dir, castle_walls))
-					then
-						local img_wall = img_walls[dir-2]
-						local offset_wall = offset_walls[dir-2]
-						love.graphics.draw(img_wall.image, hex_center.x+offset_wall.x, hex_center.y+offset_wall.y, 0, img_wall.sx, img_wall.sy, img_wall.ox, img_wall.oy)
-					end
-				end
-			end			
-		end
-	end
-	
-	
-	
+	render_walls(castle_walls)
 	
 	
 	--draw mouse position hex
-	cb_mouse = pixel_to_cube(love.mouse.getX(), love.mouse.getY())
-	draw_hex( get_hex_center(cube_to_oddr(cb_mouse)),  HEX_SIZE, Color(255,255,0))
+--	cb_mouse = pixel_to_cube(love.mouse.getX(), love.mouse.getY())
+--	draw_hex( get_hex_center(cube_to_oddr(cb_mouse)),  HEX_SIZE, Color(255,255,0))
 	
 	
 	
-----[[
+--[[
 	--draw coordinates
 	for i=0,GRID_COLS,1
 	do
@@ -267,10 +261,9 @@ function love.draw()
 			draw_hex_coordinate(hex_odd)
 			love.graphics.setPointSize(5)
 			
-			--local cb = oddr_to_cube(hex_odd)
-			--local pt = hex_to_pixel(Hex( cube_to_hex(cb.x, cb.y, cb.z)) )
 			local pt = oddr_to_pixel(hex_odd)
-			love.graphics.points(pt.x-  0.5 * HEX_W, pt.y-  0.5 * HEX_H)
+			--local pt = get_hex_center(hex_odd)
+			love.graphics.points(pt.x, pt.y)
 		end
 	end
 --]]

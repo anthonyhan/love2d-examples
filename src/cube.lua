@@ -186,15 +186,9 @@ function cube_ring(center_cube, radius)
 	return results
 end
 
-function cube_to_pixel(cube)
-	local x = HEX_SIZE * math.sqrt(3) * (cube.q + cube.r/2)
-	local y = HEX_SIZE * 3/2 * cube.r
-	return Point(x, y)
-end
-
 function pixel_to_cube(x, y)
-	x= x-  0.5 * HEX_W
-	y= y-0.5 * HEX_H
+	--x= x-  0.5 * HEX_W
+	--y= y-0.5 * HEX_H
 	local q = (x * math.sqrt(3)/3 - y/3) / HEX_SIZE
 	local r = y * 2/3 /HEX_SIZE
 	

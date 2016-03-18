@@ -15,7 +15,7 @@ function round(x)
 end
 
 function is_cube_in_list(cube, list)
-	for i, v in pairs(list)  do
+	for i, v in ipairs(list)  do
 		if( v.x == cube.x and v.y == cube.y and v.z == cube.z) then
 			return true
 		end
@@ -31,4 +31,12 @@ function cube_has_neighor_in_list(cube, dir, list)
 		return true
 	end
 	return false
+end
+
+function cube_sort_comp(a, b)
+	if a.z == b.z then
+		return a.x <= b.x
+	else
+		return a.z < b.z
+	end
 end
